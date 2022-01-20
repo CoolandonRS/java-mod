@@ -6,9 +6,11 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
@@ -26,6 +28,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.numra.tech.blocks.blockentities.ConveyorBasicBlockEntity;
+import org.jetbrains.annotations.Nullable;
 
 import static net.numra.tech.NumraTech.logger_block;
 
@@ -79,7 +82,7 @@ public class ConveyorBasicBlock extends BlockWithEntity {
             default -> this.getDefaultState();
         };
     }
-
+    
     public boolean testConveyorConnect(BlockState outState, Direction direction, BlockState inState) {
         //CREDIT: "! !#6008" in discord helped a lot with this, so thanks :)
         if (direction.getOpposite() == outState.get(DIRECTION).getFirstDirection()) {

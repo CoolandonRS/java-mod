@@ -45,7 +45,7 @@ public class ConveyorBasicBlockEntity extends BlockEntity implements SidedInvent
                         if (blockEntity.progress[i] >= 800) {
                             if (blockEntity.progress[i] >= 1000) {
                                 if (!blockEntity.progressItem(i, world, pos).equals("Blocked")) {
-                                    blockEntity.progress[i] = 1; //Starts at 1 so it renders
+                                    blockEntity.progress[i] = 0;
                                 }
                             }
                             if (blockEntity.checkIfBlocked(world, pos)) {
@@ -65,6 +65,7 @@ public class ConveyorBasicBlockEntity extends BlockEntity implements SidedInvent
             }
         }
     }
+    
     private String progressItem(int itemIndex, World world, BlockPos pos) { // as of now the only return that does anything is "Blocked"
         BlockPos outPos = pos.offset(getCachedState().get(DIRECTION).getSecondDirection());
         PositionImpl dropPos = getDropPos(pos);
@@ -125,11 +126,12 @@ public class ConveyorBasicBlockEntity extends BlockEntity implements SidedInvent
             return "Blocked";
         }
     }
-
+    
     private boolean checkIfBlocked(World world, BlockPos pos) {
         BlockPos outPos = pos.offset(getCachedState().get(DIRECTION).getSecondDirection());
+        BlockEntity outBlockEntity = world.getBlockEntity(outPos);
         Block outBlock = world.getBlockState(outPos).getBlock();
-        return !(outBlock instanceof AirBlock || outBlock instanceof FluidBlock || outBlock instanceof BubbleColumnBlock || (world.getBlockEntity(outPos) instanceof Inventory && !(outBlock instanceof ConveyorBasicBlock)) || outBlock instanceof ConveyorBasicBlock && !((ConveyorBasicBlock) getCachedState().getBlock()).testConveyorConnect(getCachedState(), getCachedState().get(DIRECTION).getSecondDirection(), world.getBlockState(outPos)));
+        return !(outBlock instanceof AirBlock || outBlock instanceof FluidBlock || outBlock instanceof BubbleColumnBlock || (outBlockEntity instanceof Inventory && !(outBlockEntity instanceof ConveyorBasicBlockEntity)) || (outBlockEntity instanceof ConveyorBasicBlockEntity && ((ConveyorBasicBlock) outBlock).testConveyorConnect(getCachedState(), getCachedState().get(DIRECTION).getSecondDirection(), outBlockEntity.getCachedState())));
     }
 
     private PositionImpl getDropPos(BlockPos pos) {
@@ -193,10 +195,17 @@ public class ConveyorBasicBlockEntity extends BlockEntity implements SidedInvent
 
     @Override
     public void setStack(int slot, ItemStack stack) { //CREDIT: Adapted from https://fabricmc.net/wiki/tutorial:inventory
+        this.refreshProgress();
         stacks.set(slot, stack);
         if (stack.getCount() > getMaxCountPerStack()) {
             stack.setCount(getMaxCountPerStack());
         }
+    }
+    
+    private void refreshProgress() { //Fixes a bug but there is a probably a better way to do so.
+        BlockState blockState = this.world.getBlockState(this.pos);
+        this.world.setBlockState(this.pos, blockState.with(ACTIVE, !blockState.get(ACTIVE)));
+        this.world.setBlockState(this.pos, blockState.with(ACTIVE, blockState.get(ACTIVE)));
     }
 
     @Override
