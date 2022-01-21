@@ -22,6 +22,8 @@ import net.numra.tech.blocks.ConveyorBasic;
 import net.numra.tech.blocks.ConveyorBasicBlock;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+
 import static net.numra.tech.NumraTech.logger_block;
 import static net.numra.tech.blocks.ConveyorBasicBlock.ACTIVE;
 import static net.numra.tech.blocks.ConveyorBasicBlock.DIRECTION;
@@ -32,21 +34,21 @@ public class ConveyorBasicBlockEntity extends BlockEntity implements SidedInvent
     private final int transferSpeed;
     private boolean blocked;
     private int[] progress;
-
-    private BlockState selfState;
+    
     private final DefaultedList<ItemStack> stacks;
 
     public static void tick(World world, BlockPos pos, BlockState state, ConveyorBasicBlockEntity blockEntity) {
         if (world.isClient) return;
-        if (blockEntity.selfState.get(ACTIVE)) {
+        if (blockEntity.getCachedState().get(ACTIVE)) {
             if (!blockEntity.blocked) {
                 for (int i = 0; i < blockEntity.progress.length; ++i) {
                     if (!blockEntity.stacks.get(i).isEmpty()) {
                         blockEntity.progress[i] += blockEntity.transferSpeed;
                         if (blockEntity.progress[i] >= 800) {
                             if (blockEntity.progress[i] >= 1000) {
-                                if (!blockEntity.progressItem(i, world, pos).equals("Blocked")) {
-                                    blockEntity.progress[i] = 0;
+                                String progressResult = blockEntity.progressItem(i, world, pos);
+                                if (!progressResult.equals("Blocked")) {
+                                    blockEntity.progress[i] = -1;
                                 }
                             }
                             if (blockEntity.checkIfBlocked(world, pos)) {
@@ -55,7 +57,7 @@ public class ConveyorBasicBlockEntity extends BlockEntity implements SidedInvent
                             }
                         }
                         blockEntity.markDirty();
-                    } else if (blockEntity.progress[i] != 0) blockEntity.progress[i] = 0;
+                    } else if (blockEntity.progress[i] < 1) blockEntity.progress[i] = 0;
                     blockEntity.markDirty();
                 }
             } else {
@@ -66,17 +68,18 @@ public class ConveyorBasicBlockEntity extends BlockEntity implements SidedInvent
             }
         }
     }
+    
     private String progressItem(int itemIndex, World world, BlockPos pos) { // as of now the only return that does anything is "Blocked"
-        BlockPos outPos = pos.offset(selfState.get(DIRECTION).getSecondDirection());
+        BlockPos outPos = pos.offset(getCachedState().get(DIRECTION).getSecondDirection());
         PositionImpl dropPos = getDropPos(pos);
         Block outBlock = world.getBlockState(outPos).getBlock();
         @Nullable BlockEntity tempOutEntity = world.getBlockEntity(outPos);
         if (outBlock instanceof ConveyorBasicBlock) {
-            if (((ConveyorBasicBlock)selfState.getBlock()).testConveyorConnect(selfState, selfState.get(DIRECTION).getSecondDirection(), world.getBlockState(outPos))) {
+            if (((ConveyorBasicBlock)getCachedState().getBlock()).testConveyorConnect(getCachedState(), getCachedState().get(DIRECTION).getSecondDirection(), world.getBlockState(outPos))) {
                 if (tempOutEntity != null) {
                     ConveyorBasicBlockEntity outEntity = (ConveyorBasicBlockEntity) tempOutEntity;
                     ItemStack outStack = stacks.get(itemIndex);
-                    Direction outDir = selfState.get(DIRECTION).getSecondDirection().getOpposite(); //Only half understand why this needs to be opposite
+                    Direction outDir = getCachedState().get(DIRECTION).getSecondDirection().getOpposite(); //Only half understand why this needs to be opposite
                     if (!outEntity.blocked) {
                         if (insertItem(outEntity, outDir, outStack)) {
                             removeStack(itemIndex);
@@ -102,7 +105,7 @@ public class ConveyorBasicBlockEntity extends BlockEntity implements SidedInvent
         } else if (tempOutEntity instanceof Inventory) {
             boolean inserted;
             if (tempOutEntity instanceof SidedInventory) {
-                inserted = insertItem((SidedInventory) tempOutEntity, selfState.get(DIRECTION).getSecondDirection(), stacks.get(itemIndex));
+                inserted = insertItem((SidedInventory) tempOutEntity, getCachedState().get(DIRECTION).getSecondDirection(), stacks.get(itemIndex));
             } else {
                 inserted = insertItem((Inventory) tempOutEntity, stacks.get(itemIndex));
             }
@@ -126,29 +129,22 @@ public class ConveyorBasicBlockEntity extends BlockEntity implements SidedInvent
             return "Blocked";
         }
     }
-
+    
     private boolean checkIfBlocked(World world, BlockPos pos) {
-        BlockPos outPos = pos.offset(selfState.get(DIRECTION).getSecondDirection());
+        BlockPos outPos = pos.offset(getCachedState().get(DIRECTION).getSecondDirection());
+        BlockEntity outBlockEntity = world.getBlockEntity(outPos);
         Block outBlock = world.getBlockState(outPos).getBlock();
-        return !(outBlock instanceof AirBlock) && !(outBlock instanceof FluidBlock) && !(outBlock instanceof BubbleColumnBlock) && (!(outBlock instanceof ConveyorBasicBlock) || !((ConveyorBasicBlock) selfState.getBlock()).testConveyorConnect(selfState, selfState.get(DIRECTION).getSecondDirection(), world.getBlockState(outPos)));
+        return !(outBlock instanceof AirBlock || outBlock instanceof FluidBlock || outBlock instanceof BubbleColumnBlock || (outBlockEntity instanceof Inventory && !(outBlockEntity instanceof ConveyorBasicBlockEntity)) || (outBlockEntity instanceof ConveyorBasicBlockEntity && ((ConveyorBasicBlock) outBlock).testConveyorConnect(getCachedState(), getCachedState().get(DIRECTION).getSecondDirection(), outBlockEntity.getCachedState())));
     }
 
     private PositionImpl getDropPos(BlockPos pos) {
         BlockPos tempPos;
-        switch (selfState.get(DIRECTION).getSecondDirection()) {
+        switch (getCachedState().get(DIRECTION).getSecondDirection()) {
             case NORTH -> { tempPos = pos.north(); return new PositionImpl((tempPos.getX() + 0.5), tempPos.getY(), (tempPos.getZ() + 0.8)); }
             case EAST -> { tempPos = pos.east(); return new PositionImpl((tempPos.getX() + 0.2), tempPos.getY(), (tempPos.getZ() + 0.5)); }
             case SOUTH -> { tempPos = pos.south(); return new PositionImpl((tempPos.getX() + 0.5), tempPos.getY(), (tempPos.getZ() + 0.2)); }
             default -> { tempPos = pos.west(); return new PositionImpl((tempPos.getX() + 0.8), tempPos.getY(), (tempPos.getZ() + 0.5)); } // see above comment
         }
-    }
-
-    public void updateSelfState(BlockState state) {
-        selfState = state;
-    }
-
-    public BlockState getSelfState() {
-        return this.selfState;
     }
 
     public int getProgress(int index) {
@@ -202,10 +198,18 @@ public class ConveyorBasicBlockEntity extends BlockEntity implements SidedInvent
 
     @Override
     public void setStack(int slot, ItemStack stack) { //CREDIT: Adapted from https://fabricmc.net/wiki/tutorial:inventory
+        this.refreshProgress();
+        if (this.progress[slot] == -1) this.progress[slot] = 0;
         stacks.set(slot, stack);
         if (stack.getCount() > getMaxCountPerStack()) {
             stack.setCount(getMaxCountPerStack());
         }
+    }
+    
+    private void refreshProgress() { //Fixes a bug but there is a probably a better way to do so.
+        BlockState blockState = this.world.getBlockState(this.pos);
+        this.world.setBlockState(this.pos, blockState.with(ACTIVE, !blockState.get(ACTIVE)));
+        this.world.setBlockState(this.pos, blockState.with(ACTIVE, blockState.get(ACTIVE)));
     }
 
     @Override
@@ -281,39 +285,37 @@ public class ConveyorBasicBlockEntity extends BlockEntity implements SidedInvent
     @Override
     public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
         if (dir != null) {
-            return (dir == Direction.UP || dir == selfState.get(DIRECTION).getFirstDirection().getOpposite()) && !(stacks.get(slot).getCount() + stack.getCount() > slotSize /* Hacky replacement for getMaxCountPerStack() */);
+            return (dir == Direction.UP || dir == getCachedState().get(DIRECTION).getFirstDirection().getOpposite()) && !(stacks.get(slot).getCount() + stack.getCount() > slotSize /* Hacky replacement for getMaxCountPerStack() */);
         } else return false;
     }
 
     @Override
     public boolean canExtract(int slot, ItemStack stack, Direction dir) {
-        return dir == Direction.DOWN /* Temporary */ || dir == selfState.get(DIRECTION).getSecondDirection();
-    }
-    
-
-    public ConveyorBasicBlockEntity(BlockPos pos, BlockState state) {
-        super(ConveyorBasic.CONVEYOR_BASIC_BLOCK_ENTITY, pos, state);
-        this.inventorySize = ((ConveyorBasicBlock)state.getBlock()).getInventorySize();
-        this.slotSize = ((ConveyorBasicBlock)state.getBlock()).getSlotSize();
-        this.stacks = DefaultedList.ofSize(size(), ItemStack.EMPTY);
-        this.selfState = state;
-        this.transferSpeed = ((ConveyorBasicBlock)state.getBlock()).getTransferSpeed();
-        this.progress = new int[inventorySize];
-        this.blocked = false;
+        return dir == Direction.DOWN /* Temporary */ || dir == getCachedState().get(DIRECTION).getSecondDirection();
     }
     
     @Override
     public Packet<ClientPlayPacketListener> toUpdatePacket() {
         return BlockEntityUpdateS2CPacket.create(this);
     }
-
+    
     @Override
     public void markDirty()  {
         ((ServerWorld) world).getChunkManager().markForUpdate(pos);
     }
-
+    
     @Override
     public NbtCompound toInitialChunkDataNbt() {
         return createNbtWithIdentifyingData();
+    }
+
+    public ConveyorBasicBlockEntity(BlockPos pos, BlockState state) {
+        super(ConveyorBasic.CONVEYOR_BASIC_BLOCK_ENTITY, pos, state);
+        this.inventorySize = ((ConveyorBasicBlock)state.getBlock()).getInventorySize();
+        this.slotSize = ((ConveyorBasicBlock)state.getBlock()).getSlotSize();
+        this.stacks = DefaultedList.ofSize(size(), ItemStack.EMPTY);
+        this.transferSpeed = ((ConveyorBasicBlock)state.getBlock()).getTransferSpeed();
+        this.progress = new int[inventorySize];
+        this.blocked = false;
     }
 }
