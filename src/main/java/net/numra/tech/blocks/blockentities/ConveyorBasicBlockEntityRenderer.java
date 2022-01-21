@@ -10,12 +10,11 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.PositionImpl;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 import net.numra.tech.blocks.ConveyorDirection;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 import static net.numra.tech.blocks.ConveyorBasicBlock.DIRECTION;
 
@@ -29,20 +28,8 @@ public class ConveyorBasicBlockEntityRenderer implements BlockEntityRenderer<Con
     public Quaternion getBeltRotationQuaternion(ConveyorBasicBlockEntity blockEntity, int index) {
         ConveyorDirection directions = blockEntity.getCachedState().get(DIRECTION);
         int progress = blockEntity.getProgress(index);
-        if((directions.getFirstDirection() == directions.getSecondDirection()) || (progress <= 450)) {
+        if((directions.getFirstDirection() == directions.getSecondDirection()) || (progress <= 500)) {
             return getDirectionQuaternion(directions.getFirstDirection());
-        } else if (progress <= 550){
-            int rotation = switch(directions.getFirstDirection()) {
-                case NORTH -> 180;
-                case EAST -> 90;
-                case SOUTH -> 0;
-                default -> -90;
-            };
-            rotation += switch(directions.getSecondDirection()) {
-                case NORTH, WEST -> 45;
-                default -> -45;
-            };
-            if(rotation == Math.abs(rotation)) return Vec3f.POSITIVE_Y.getDegreesQuaternion(rotation); else return Vec3f.NEGATIVE_Y.getDegreesQuaternion(-rotation);
         } else {
             return getDirectionQuaternion(directions.getSecondDirection());
         }
@@ -58,35 +45,54 @@ public class ConveyorBasicBlockEntityRenderer implements BlockEntityRenderer<Con
         };
     }
     
-    private double getBeltTranslationValue(ConveyorBasicBlockEntity blockEntity, int index, String desiredValue) {
-        if (Objects.equals(desiredValue, "y")) return 0.22;
+    private PositionImpl getBeltTranslations(ConveyorBasicBlockEntity blockEntity, int index) {
+        double x, y = 0.22, z;
         ConveyorDirection directions = blockEntity.getCachedState().get(DIRECTION);
-        if (directions.getFirstDirection() == directions.getSecondDirection()) {
-            switch (directions.getFirstDirection()) {
-                case NORTH -> { if (Objects.equals(desiredValue, "x")) return 0.5; else return (double) -blockEntity.getProgress(index) / 1000 + 1; }
-                case EAST -> { if (Objects.equals(desiredValue, "z")) return 0.5; else return (double) blockEntity.getProgress(index) / 1000; }
-                case SOUTH -> { if (Objects.equals(desiredValue, "x")) return 0.5; else return (double) blockEntity.getProgress(index) / 1000; }
-                default -> { if (Objects.equals(desiredValue, "z")) return 0.5; else return (double) -blockEntity.getProgress(index) / 1000 + 1; }
-            }
+        Direction firstDirection = directions.getFirstDirection();
+        Direction secondDirection = directions.getSecondDirection();
+        double t = (double) blockEntity.getProgress(index) / 1000;
+        if (firstDirection == secondDirection || t <= 0.5) {
+            x = switch (firstDirection) {
+                case NORTH, SOUTH -> 0.5;
+                case EAST -> t;
+                default -> -t + 1;
+            };
+            z = switch (firstDirection) {
+                case EAST, WEST -> 0.5;
+                case NORTH -> -t + 1;
+                default -> t;
+            };
+            return new PositionImpl(x, y, z);
         } else {
-            return 0; //temp
+            x = switch (secondDirection) {
+                case NORTH, SOUTH -> 0.5;
+                case EAST -> t;
+                default -> -t + 1;
+            };
+            z = switch (secondDirection) {
+                case EAST, WEST -> 0.5;
+                case NORTH -> -t + 1;
+                default -> t;
+            };
+            return new PositionImpl(x, y, z);
         }
     }
     
     @Override
     public void render(ConveyorBasicBlockEntity blockEntity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        matrices.push();
         stacks = blockEntity.getStacks();
         int index = 0;
         for (ItemStack stack : stacks) {
-            if (blockEntity.getProgress(index) == -1) continue;
-            matrices.translate(getBeltTranslationValue(blockEntity, index, "x"), getBeltTranslationValue(blockEntity, index, "y"), getBeltTranslationValue(blockEntity, index, "z"));
+            if (blockEntity.getProgress(index) == -1) { index++; continue; }
+            matrices.push();
+            PositionImpl translationValues = getBeltTranslations(blockEntity, index);
+            matrices.translate(translationValues.getX(), translationValues.getY(), translationValues.getZ());
             matrices.multiply(getBeltRotationQuaternion(blockEntity, index));
             matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90));
             matrices.scale(0.9F, 0.9F, 0.9F);
             MinecraftClient.getInstance().getItemRenderer().renderItem(stack, ModelTransformation.Mode.GROUND, light, overlay, matrices, vertexConsumers,  0);
+            matrices.pop();
             index++;
         }
-        matrices.pop();
     }
 }

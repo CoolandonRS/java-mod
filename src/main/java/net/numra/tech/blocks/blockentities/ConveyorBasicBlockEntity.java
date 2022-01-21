@@ -22,8 +22,6 @@ import net.numra.tech.blocks.ConveyorBasic;
 import net.numra.tech.blocks.ConveyorBasicBlock;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-
 import static net.numra.tech.NumraTech.logger_block;
 import static net.numra.tech.blocks.ConveyorBasicBlock.ACTIVE;
 import static net.numra.tech.blocks.ConveyorBasicBlock.DIRECTION;
@@ -150,6 +148,7 @@ public class ConveyorBasicBlockEntity extends BlockEntity implements SidedInvent
     public int getProgress(int index) {
         return this.progress[index];
     }
+    
     @Override
     public int size() {
         return inventorySize;
