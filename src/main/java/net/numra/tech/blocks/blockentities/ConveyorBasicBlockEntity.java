@@ -198,7 +198,7 @@ public class ConveyorBasicBlockEntity extends BlockEntity implements SidedInvent
     @Override
     public void setStack(int slot, ItemStack stack) { //CREDIT: Adapted from https://fabricmc.net/wiki/tutorial:inventory
         this.refreshProgress();
-        if (this.progress[slot] == -1) this.progress[slot] = 0;
+        if (!stack.isEmpty()) if (this.progress[slot] == -1) this.progress[slot] = 0;
         stacks.set(slot, stack);
         if (stack.getCount() > getMaxCountPerStack()) {
             stack.setCount(getMaxCountPerStack());

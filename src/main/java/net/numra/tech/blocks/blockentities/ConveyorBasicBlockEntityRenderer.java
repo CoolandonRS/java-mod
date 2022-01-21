@@ -50,7 +50,8 @@ public class ConveyorBasicBlockEntityRenderer implements BlockEntityRenderer<Con
         ConveyorDirection directions = blockEntity.getCachedState().get(DIRECTION);
         Direction firstDirection = directions.getFirstDirection();
         Direction secondDirection = directions.getSecondDirection();
-        double t = (double) blockEntity.getProgress(index) / 1000;
+        double t;
+        if (index != -1) t = (double) blockEntity.getProgress(index) / 1000; else t = 1;
         if (firstDirection == secondDirection || t <= 0.5) {
             x = switch (firstDirection) {
                 case NORTH, SOUTH -> 0.5;
@@ -62,7 +63,6 @@ public class ConveyorBasicBlockEntityRenderer implements BlockEntityRenderer<Con
                 case NORTH -> -t + 1;
                 default -> t;
             };
-            return new PositionImpl(x, y, z);
         } else {
             x = switch (secondDirection) {
                 case NORTH, SOUTH -> 0.5;
@@ -74,8 +74,8 @@ public class ConveyorBasicBlockEntityRenderer implements BlockEntityRenderer<Con
                 case NORTH -> -t + 1;
                 default -> t;
             };
-            return new PositionImpl(x, y, z);
         }
+        return new PositionImpl(x, y, z);
     }
     
     @Override
@@ -83,9 +83,10 @@ public class ConveyorBasicBlockEntityRenderer implements BlockEntityRenderer<Con
         stacks = blockEntity.getStacks();
         int index = 0;
         for (ItemStack stack : stacks) {
-            if (blockEntity.getProgress(index) == -1) { index++; continue; }
+            System.out.println(blockEntity.getProgress(index));
             matrices.push();
-            PositionImpl translationValues = getBeltTranslations(blockEntity, index);
+            PositionImpl translationValues;
+            if (blockEntity.getProgress(index) != -1) translationValues = getBeltTranslations(blockEntity, index); else translationValues = getBeltTranslations(blockEntity, -1);
             matrices.translate(translationValues.getX(), translationValues.getY(), translationValues.getZ());
             matrices.multiply(getBeltRotationQuaternion(blockEntity, index));
             matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90));
