@@ -20,7 +20,10 @@
   "entrypoints": {
     "main": [
       "net.numra.tech.NumraTech"
-    ]
+    ],
+    "client": [
+        "net.numra.tech.NumraTechClient"
+      ]
   },
   "mixins": [
     

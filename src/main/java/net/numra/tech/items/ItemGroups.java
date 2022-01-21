@@ -8,5 +8,5 @@ import net.minecraft.util.Identifier;
 import static net.numra.tech.blocks.ConveyorBasic.CONVEYOR_WOOD;
 
 public class ItemGroups {
-    public static final ItemGroup NUMRA_CONVEYORS = FabricItemGroupBuilder.build(new Identifier("numra","conveyors"), () -> new ItemStack(CONVEYOR_WOOD));
+    public static final ItemGroup NUMRA_CONVEYORS = FabricItemGroupBuilder.build(new Identifier("numra:conveyors"), () -> new ItemStack(CONVEYOR_WOOD));
 }
