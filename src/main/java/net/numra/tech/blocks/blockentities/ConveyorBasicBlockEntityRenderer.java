@@ -83,7 +83,6 @@ public class ConveyorBasicBlockEntityRenderer implements BlockEntityRenderer<Con
         stacks = blockEntity.getStacks();
         int index = 0;
         for (ItemStack stack : stacks) {
-            System.out.println(blockEntity.getProgress(index));
             matrices.push();
             PositionImpl translationValues;
             if (blockEntity.getProgress(index) != -1) translationValues = getBeltTranslations(blockEntity, index); else translationValues = getBeltTranslations(blockEntity, -1);
