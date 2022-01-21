@@ -1,5 +1,6 @@
 package net.numra.tech.blocks.blockentities;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -78,6 +79,7 @@ public class ConveyorBasicBlockEntityRenderer implements BlockEntityRenderer<Con
         stacks = blockEntity.getStacks();
         int index = 0;
         for (ItemStack stack : stacks) {
+            if (blockEntity.getProgress(index) == -1) continue;
             matrices.translate(getBeltTranslationValue(blockEntity, index, "x"), getBeltTranslationValue(blockEntity, index, "y"), getBeltTranslationValue(blockEntity, index, "z"));
             matrices.multiply(getBeltRotationQuaternion(blockEntity, index));
             matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90));

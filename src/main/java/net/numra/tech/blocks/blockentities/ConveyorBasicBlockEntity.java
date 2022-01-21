@@ -22,6 +22,8 @@ import net.numra.tech.blocks.ConveyorBasic;
 import net.numra.tech.blocks.ConveyorBasicBlock;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+
 import static net.numra.tech.NumraTech.logger_block;
 import static net.numra.tech.blocks.ConveyorBasicBlock.ACTIVE;
 import static net.numra.tech.blocks.ConveyorBasicBlock.DIRECTION;
@@ -44,8 +46,9 @@ public class ConveyorBasicBlockEntity extends BlockEntity implements SidedInvent
                         blockEntity.progress[i] += blockEntity.transferSpeed;
                         if (blockEntity.progress[i] >= 800) {
                             if (blockEntity.progress[i] >= 1000) {
-                                if (!blockEntity.progressItem(i, world, pos).equals("Blocked")) {
-                                    blockEntity.progress[i] = 0;
+                                String progressResult = blockEntity.progressItem(i, world, pos);
+                                if (!progressResult.equals("Blocked")) {
+                                    blockEntity.progress[i] = -1;
                                 }
                             }
                             if (blockEntity.checkIfBlocked(world, pos)) {
@@ -54,7 +57,7 @@ public class ConveyorBasicBlockEntity extends BlockEntity implements SidedInvent
                             }
                         }
                         blockEntity.markDirty();
-                    } else if (blockEntity.progress[i] <= 1) blockEntity.progress[i] = 1;
+                    } else if (blockEntity.progress[i] < 1) blockEntity.progress[i] = 0;
                     blockEntity.markDirty();
                 }
             } else {
@@ -196,6 +199,7 @@ public class ConveyorBasicBlockEntity extends BlockEntity implements SidedInvent
     @Override
     public void setStack(int slot, ItemStack stack) { //CREDIT: Adapted from https://fabricmc.net/wiki/tutorial:inventory
         this.refreshProgress();
+        if (this.progress[slot] == -1) this.progress[slot] = 0;
         stacks.set(slot, stack);
         if (stack.getCount() > getMaxCountPerStack()) {
             stack.setCount(getMaxCountPerStack());
