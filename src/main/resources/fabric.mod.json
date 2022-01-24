@@ -1,41 +1,41 @@
 {
-  "schemaVersion": 1,
-  "id": "numra",
-  "version": "${version}",
+    "schemaVersion": 1,
+    "id": "numra",
+    "version": "${version}",
 
-  "name": "Numra Tech",
-  "description": "Placeholder :)",
-  "authors": [
-    "CoolandonRS",
-    "Salamander01"
-  ],
-  "contact": {
-    "sources": "https://github.com/CoolandonRS/numra-tech"
-  },
-
-  "license": "GPL-3.0",
-  "icon": "assets/numra/icon.png",
-
-  "environment": "*",
-  "entrypoints": {
-    "main": [
-      "net.numra.tech.NumraTech"
+    "name": "Numra Tech",
+    "description": "Placeholder :)",
+    "authors": [
+        "CoolandonRS",
+        "Salamander01"
     ],
-    "client": [
-        "net.numra.tech.NumraTechClient"
-      ]
-  },
-  "mixins": [
-    
-  ],
+    "contact": {
+        "sources": "https://github.com/CoolandonRS/numra-tech"
+    },
 
-  "depends": {
-    "fabricloader": ">=0.11.3",
-    "fabric": "*",
-    "minecraft": "1.18.x",
-    "java": ">=17"
-  },
-  "suggests": {
-    "another-mod": "*"
-  }
+    "license": "GPL-3.0",
+    "icon": "assets/numra/icon.png",
+
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "net.numra.tech.NumraTech"
+        ],
+        "client": [
+            "net.numra.tech.NumraTechClient"
+        ]
+    },
+    "mixins": [
+
+    ],
+
+    "depends": {
+        "fabricloader": ">=0.11.3",
+        "fabric": "*",
+        "minecraft": "1.18.x",
+        "java": ">=17"
+    },
+    "suggests": {
+        "another-mod": "*"
+    }
 }

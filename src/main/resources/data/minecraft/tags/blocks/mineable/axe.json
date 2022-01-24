@@ -1,6 +1,6 @@
 {
-  "replace": false,
-  "values": [
-    "numra:conveyor_wood"
-  ]
+    "replace": false,
+    "values": [
+        "numra:conveyor_wood"
+    ]
 }
