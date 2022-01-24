@@ -1,99 +1,99 @@
 {
-  "variants": {
-    "on=false,direction=north": {
-      "model": "numra:block/conveyor_wood",
-      "y": 0
-    },
-    "on=false,direction=east": {
-      "model": "numra:block/conveyor_wood",
-      "y": 90
-    },
-    "on=false,direction=south": {
-      "model": "numra:block/conveyor_wood",
-      "y": 180
-    },
-    "on=false,direction=west": {
-      "model": "numra:block/conveyor_wood",
-      "y": 270
-    },
-    "on=true,direction=north": {
-      "model": "numra:block/conveyor_wood_on",
-      "y": 0
-    },
-    "on=true,direction=east": {
-      "model": "numra:block/conveyor_wood_on",
-      "y": 90
-    },
-    "on=true,direction=south": {
-      "model": "numra:block/conveyor_wood_on",
-      "y": 180
-    },
-    "on=true,direction=west": {
-      "model": "numra:block/conveyor_wood_on",
-      "y": 270
-    },
-    "on=false,direction=north_east": {
-      "model": "numra:block/conveyor_wood_turn1",
-      "y": 0
-    },
-    "on=false,direction=east_north": {
-      "model": "numra:block/conveyor_wood_turn2",
-      "y": 180
-    },
-    "on=false,direction=south_east": {
-      "model": "numra:block/conveyor_wood_turn2",
-      "y": 270
-    },
-    "on=false,direction=east_south": {
-      "model": "numra:block/conveyor_wood_turn1",
-      "y": 90
-    },
-    "on=false,direction=south_west": {
-      "model": "numra:block/conveyor_wood_turn1",
-      "y": 180
-    },
-    "on=false,direction=west_south": {
-      "model": "numra:block/conveyor_wood_turn2",
-      "y": 0
-    },
-    "on=false,direction=north_west": {
-      "model": "numra:block/conveyor_wood_turn2",
-      "y": 90
-    },
-    "on=false,direction=west_north": {
-      "model": "numra:block/conveyor_wood_turn1",
-      "y": 270
-    },"on=true,direction=north_east": {
-      "model": "numra:block/conveyor_wood_turn1_on",
-      "y": 0
-    },
-    "on=true,direction=east_north": {
-      "model": "numra:block/conveyor_wood_turn2_on",
-      "y": 180
-    },
-    "on=true,direction=south_east": {
-      "model": "numra:block/conveyor_wood_turn2_on",
-      "y": 270
-    },
-    "on=true,direction=east_south": {
-      "model": "numra:block/conveyor_wood_turn1_on",
-      "y": 90
-    },
-    "on=true,direction=south_west": {
-      "model": "numra:block/conveyor_wood_turn1_on",
-      "y": 180
-    },
-    "on=true,direction=west_south": {
-      "model": "numra:block/conveyor_wood_turn2_on",
-      "y": 0
-    },
-    "on=true,direction=north_west": {
-      "model": "numra:block/conveyor_wood_turn2_on",
-      "y": 90
-    },
-    "on=true,direction=west_north": {
-      "model": "numra:block/conveyor_wood_turn1_on",
-      "y": 270
+    "variants": {
+        "on=false,direction=north": {
+            "model": "numra:block/conveyor_wood",
+            "y": 0
+        },
+        "on=false,direction=east": {
+            "model": "numra:block/conveyor_wood",
+            "y": 90
+        },
+        "on=false,direction=south": {
+            "model": "numra:block/conveyor_wood",
+            "y": 180
+        },
+        "on=false,direction=west": {
+            "model": "numra:block/conveyor_wood",
+            "y": 270
+        },
+        "on=true,direction=north": {
+            "model": "numra:block/conveyor_wood_on",
+            "y": 0
+        },
+        "on=true,direction=east": {
+            "model": "numra:block/conveyor_wood_on",
+            "y": 90
+        },
+        "on=true,direction=south": {
+            "model": "numra:block/conveyor_wood_on",
+            "y": 180
+        },
+        "on=true,direction=west": {
+            "model": "numra:block/conveyor_wood_on",
+            "y": 270
+        },
+        "on=false,direction=north_east": {
+            "model": "numra:block/conveyor_wood_turn1",
+            "y": 0
+        },
+        "on=false,direction=east_north": {
+            "model": "numra:block/conveyor_wood_turn2",
+            "y": 180
+        },
+        "on=false,direction=south_east": {
+            "model": "numra:block/conveyor_wood_turn2",
+            "y": 270
+        },
+        "on=false,direction=east_south": {
+            "model": "numra:block/conveyor_wood_turn1",
+            "y": 90
+        },
+        "on=false,direction=south_west": {
+            "model": "numra:block/conveyor_wood_turn1",
+            "y": 180
+        },
+        "on=false,direction=west_south": {
+            "model": "numra:block/conveyor_wood_turn2",
+            "y": 0
+        },
+        "on=false,direction=north_west": {
+            "model": "numra:block/conveyor_wood_turn2",
+            "y": 90
+        },
+        "on=false,direction=west_north": {
+            "model": "numra:block/conveyor_wood_turn1",
+            "y": 270
+        },"on=true,direction=north_east": {
+            "model": "numra:block/conveyor_wood_turn1_on",
+            "y": 0
+        },
+        "on=true,direction=east_north": {
+            "model": "numra:block/conveyor_wood_turn2_on",
+            "y": 180
+        },
+        "on=true,direction=south_east": {
+            "model": "numra:block/conveyor_wood_turn2_on",
+            "y": 270
+        },
+        "on=true,direction=east_south": {
+            "model": "numra:block/conveyor_wood_turn1_on",
+            "y": 90
+        },
+        "on=true,direction=south_west": {
+            "model": "numra:block/conveyor_wood_turn1_on",
+            "y": 180
+        },
+        "on=true,direction=west_south": {
+            "model": "numra:block/conveyor_wood_turn2_on",
+            "y": 0
+        },
+        "on=true,direction=north_west": {
+            "model": "numra:block/conveyor_wood_turn2_on",
+            "y": 90
+        },
+        "on=true,direction=west_north": {
+            "model": "numra:block/conveyor_wood_turn1_on",
+            "y": 270
+        }
     }
-  }
 }
