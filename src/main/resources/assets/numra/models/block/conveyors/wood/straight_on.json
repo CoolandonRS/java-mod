@@ -1,0 +1,6 @@
+{
+    "parent": "numra:block/conveyors/basic_straight",
+    "textures": {
+        "belt": "numra:block/conveyors/wood/straight_on"
+    }
+}
